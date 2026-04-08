@@ -53,6 +53,9 @@ def analisar_take_frame_por_frame(clip, inicio, fim, caminho_video, model_yolo):
 
 
 def detectar_angulo_camera(clip, inicio, fim, model_yolo):
+    if model_yolo is None:
+        return "indefinido"
+
     try:
         tempo_meio = (inicio + fim) / 2
         frame = clip.get_frame(tempo_meio)
@@ -133,6 +136,16 @@ def analisar_frame_individual(frame):
 
 
 def analisar_frame_com_yolo(frame, model_yolo):
+    if model_yolo is None:
+        # Modo sem IA: análise básica apenas
+        metrics = analisar_frame_individual(frame)
+        return {
+            "pontuacao_base": round(metrics["nitidez"] / 2000 * 0.4 + metrics["densidade_bordas"] * 0.4 + 0.2, 4),
+            "product_detected": False,
+            "bbox_ratio": 0.0,
+            "angulo_yolo": "indefinido"
+        }
+
     results = model_yolo(frame, verbose=False)[0]
     boxes = results.boxes.cpu() if hasattr(results.boxes, 'cpu') else results.boxes
 

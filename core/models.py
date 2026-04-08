@@ -1,10 +1,15 @@
 import streamlit as st
-from ultralytics import YOLO
-from faster_whisper import WhisperModel
 import torch
 
 
 def load_yolo_model():
+    try:
+        from ultralytics import YOLO
+    except ImportError as e:
+        st.error(f"❌ Não foi possível carregar YOLO: {e}")
+        st.warning("Modo sem IA ativado - apenas processamento básico disponível")
+        return None
+
     if st.session_state.model_yolo is None:
         model_size = st.session_state.yolo_model_size
         tracker_type = st.session_state.yolo_tracker.replace(".yaml", "")
@@ -44,6 +49,12 @@ def load_yolo_model():
 
 
 def load_whisper_model():
+    try:
+        from faster_whisper import WhisperModel
+    except ImportError as e:
+        st.warning(f"Whisper não disponível: {e}")
+        return None
+
     if st.session_state.use_whisper and st.session_state.whisper_model is None:
         with st.spinner("Carregando Whisper local (small)..."):
             st.session_state.whisper_model = WhisperModel(

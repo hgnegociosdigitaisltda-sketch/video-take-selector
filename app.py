@@ -4,15 +4,6 @@ import warnings
 import logging
 from datetime import datetime
 
-# ====================== VERIFICAÇÃO DE DEPENDÊNCIAS CRÍTICAS ======================
-try:
-    import cv2
-    print("✅ OpenCV importado com sucesso")
-except ImportError as e:
-    st.error(f"❌ Erro crítico: OpenCV não pode ser importado: {e}")
-    st.error("Isso pode indicar um problema com as dependências do sistema.")
-    st.stop()
-
 # ====================== IMPORTS DO SEU PROJETO ======================
 from core.processor import (
     processar_video,
@@ -21,7 +12,6 @@ from core.processor import (
     gerar_relatorio_e_zip
 )
 from core.config import init_session_state, get_config, carregar_roteiro
-from core.models import load_yolo_model, load_whisper_model
 from ui.sidebar import render_sidebar
 from ui.styles import apply_custom_styles
 from moviepy.editor import VideoFileClip
@@ -45,12 +35,35 @@ st.set_page_config(
 apply_custom_styles()
 
 st.title("🎬 Seleção Inteligente de Takes")
-st.markdown("YOLOv10 + Ângulos Automáticos — Otimizado para Apple Silicon M4")
+modo_status = "com IA" if model_yolo is not None else "sem IA (modo básico)"
+st.markdown(f"YOLOv10 + Ângulos Automáticos — **{modo_status}**")
 
 # ====================== INICIALIZAÇÃO ======================
 init_session_state()
-model_yolo = load_yolo_model()
-whisper_model = load_whisper_model()
+
+# ====================== CARREGAMENTO DE MODELOS (COM TRATAMENTO DE ERRO) ======================
+model_yolo = None
+whisper_model = None
+
+try:
+    from core.models import load_yolo_model, load_whisper_model
+    model_yolo = load_yolo_model()
+    whisper_model = load_whisper_model()
+    st.success("✅ Modelos IA carregados com sucesso!")
+except ImportError as e:
+    if "cv2" in str(e) or "libGL" in str(e):
+        st.error("❌ **Erro de Dependências do Sistema**")
+        st.error("OpenCV não pôde ser carregado devido a bibliotecas do sistema faltando.")
+        st.info("💡 **Solução**: Este app requer um ambiente com suporte a OpenCV. Tente:")
+        st.code("pip install opencv-python-headless")
+        st.code("apt-get install libgl1-mesa-glx libglib2.0-0")
+        st.warning("🔄 **Status**: App em modo limitado - sem IA")
+    else:
+        st.error(f"❌ Erro ao carregar modelos: {e}")
+        st.warning("🔄 **Status**: App em modo limitado - sem IA")
+except Exception as e:
+    st.error(f"❌ Erro inesperado ao carregar modelos: {e}")
+    st.warning("🔄 **Status**: App em modo limitado - sem IA")
 
 # ====================== PASTAS ======================
 UPLOAD_DIR = os.path.join(st.session_state.temp_dir, "uploads")
@@ -68,7 +81,8 @@ uploaded_srt, uploaded_videos = render_sidebar()
 
 # ====================== EXECUÇÃO DA ANÁLISE ======================
 if st.session_state.get("run_analysis") and uploaded_videos:
-    with st.spinner("🚀 Processando vídeos com IA no M4..."):
+    modo_ia = "com IA" if model_yolo is not None else "sem IA (modo básico)"
+    with st.spinner(f"🚀 Processando vídeos {modo_ia}..."):
         config = get_config()
 
         # Salva os vídeos enviados
