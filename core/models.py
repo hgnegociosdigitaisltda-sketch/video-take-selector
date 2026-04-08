@@ -3,6 +3,18 @@ import torch
 
 
 def load_yolo_model():
+    # Teste preliminar: verificar se cv2 pode ser importado
+    try:
+        import cv2
+    except ImportError as e:
+        if "libGL" in str(e) or "cannot open shared object" in str(e):
+            st.warning("⚠️ OpenCV não disponível neste ambiente (problema de bibliotecas do sistema)")
+            st.info("💡 Continuando em modo sem IA - análise básica de vídeo disponível")
+            return None
+        else:
+            st.error(f"❌ Erro inesperado no OpenCV: {e}")
+            return None
+
     try:
         from ultralytics import YOLO
     except ImportError as e:
