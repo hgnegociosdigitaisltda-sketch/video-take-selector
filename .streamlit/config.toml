@@ -1,0 +1,13 @@
+[server]
+maxUploadSize = 512
+
+[client]
+# Mostra mensagens de erro somente em logs, não altera upload behavior
+# mantendo configurações de cliente padrão.
+
+[theme]
+primaryColor = "#4f46e5"
+backgroundColor = "#f8fafc"
+secondaryBackgroundColor = "#e2e8f0"
+textColor = "#111827"
+font = "sans serif"

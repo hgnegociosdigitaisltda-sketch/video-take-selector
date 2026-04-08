@@ -66,8 +66,22 @@ def render_sidebar():
 
     # ====================== UPLOADS ======================
     st.divider()
-    uploaded_srt = st.file_uploader("📄 Upload do roteiro.srt", type=["srt"]) if not st.session_state.modo_sem_roteiro else None
-    uploaded_videos = st.file_uploader("🎥 Upload dos vídeos (.mp4)", type=["mp4"], accept_multiple_files=True)
+    uploaded_srt = st.file_uploader("📄 Upload do roteiro.srt", type=["srt"], key="uploaded_srt") if not st.session_state.modo_sem_roteiro else None
+    uploaded_videos = st.file_uploader(
+        "🎥 Upload dos vídeos (.mp4)",
+        type=["mp4"],
+        accept_multiple_files=True,
+        key="uploaded_videos"
+    )
+
+    if uploaded_videos:
+        total_bytes = sum(getattr(vid, 'size', 0) for vid in uploaded_videos)
+        total_mb = total_bytes / (1024 * 1024)
+        if total_mb > 300:
+            st.warning(
+                f"⚠️ O upload total é grande ({total_mb:.1f} MB). Isso pode exceder o tempo limite do navegador. "
+                "Tente enviar arquivos menores ou menos arquivos de uma vez."
+            )
 
     if st.button("🚀 INICIAR ANÁLISE", type="primary", use_container_width=True):
         if not uploaded_videos:
