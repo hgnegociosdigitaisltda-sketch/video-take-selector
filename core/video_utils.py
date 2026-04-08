@@ -1,7 +1,7 @@
 import os
 import cv2
 import numpy as np
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 import streamlit as st
 from collections import defaultdict
 

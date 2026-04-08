@@ -15,7 +15,7 @@ from core.config import init_session_state, get_config, carregar_roteiro
 from core.models import load_yolo_model, load_whisper_model
 from ui.sidebar import render_sidebar
 from ui.styles import apply_custom_styles
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 
 # ====================== SUPRESSÃO TOTAL DE WARNINGS (M4) ======================
 warnings.filterwarnings("ignore", message="missing ScriptRunContext")

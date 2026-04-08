@@ -3,9 +3,7 @@ import zipfile
 from datetime import datetime
 import pandas as pd
 import streamlit as st
-from moviepy import VideoFileClip
-from core.video_utils import detectar_cortes_secos, classificar_take
-
+from moviepy.editor import VideoFileClip
 
 def processar_video(video_path, config, model_yolo, whisper_model=None):
     try:
