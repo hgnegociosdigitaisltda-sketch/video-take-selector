@@ -42,6 +42,7 @@ init_session_state()
 # ====================== CARREGAMENTO DE MODELOS (COM TRATAMENTO DE ERRO) ======================
 model_yolo = None
 whisper_model = None
+modo_status = "sem IA (modo básico)"  # padrão
 
 try:
     from core.models import load_yolo_model, load_whisper_model
