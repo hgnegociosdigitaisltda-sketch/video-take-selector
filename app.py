@@ -98,6 +98,12 @@ os.makedirs(REPORT_DIR, exist_ok=True)
 # ====================== SIDEBAR ======================
 uploaded_srt, uploaded_videos = render_sidebar()
 
+# Usa dados armazenados em sessão se a rerun limpar os objetos de upload
+if uploaded_srt is None:
+    uploaded_srt = st.session_state.get("uploaded_srt")
+if not uploaded_videos:
+    uploaded_videos = st.session_state.get("uploaded_videos")
+
 # ====================== EXECUÇÃO DA ANÁLISE ======================
 if st.session_state.get("run_analysis") and uploaded_videos:
     modo_ia = "com IA" if model_yolo is not None else "sem IA (modo básico)"
