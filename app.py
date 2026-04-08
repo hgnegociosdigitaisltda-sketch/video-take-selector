@@ -35,8 +35,6 @@ st.set_page_config(
 apply_custom_styles()
 
 st.title("🎬 Seleção Inteligente de Takes")
-modo_status = "com IA" if model_yolo is not None else "sem IA (modo básico)"
-st.markdown(f"YOLOv10 + Ângulos Automáticos — **{modo_status}**")
 
 # ====================== INICIALIZAÇÃO ======================
 init_session_state()
@@ -50,6 +48,7 @@ try:
     model_yolo = load_yolo_model()
     whisper_model = load_whisper_model()
     st.success("✅ Modelos IA carregados com sucesso!")
+    modo_status = "com IA"
 except ImportError as e:
     if "cv2" in str(e) or "libGL" in str(e):
         st.error("❌ **Erro de Dependências do Sistema**")
@@ -58,12 +57,17 @@ except ImportError as e:
         st.code("pip install opencv-python-headless")
         st.code("apt-get install libgl1-mesa-glx libglib2.0-0")
         st.warning("🔄 **Status**: App em modo limitado - sem IA")
+        modo_status = "sem IA (modo básico)"
     else:
         st.error(f"❌ Erro ao carregar modelos: {e}")
         st.warning("🔄 **Status**: App em modo limitado - sem IA")
+        modo_status = "sem IA (modo básico)"
 except Exception as e:
     st.error(f"❌ Erro inesperado ao carregar modelos: {e}")
     st.warning("🔄 **Status**: App em modo limitado - sem IA")
+    modo_status = "sem IA (modo básico)"
+
+st.markdown(f"YOLOv10 + Ângulos Automáticos — **{modo_status}**")
 
 # ====================== PASTAS ======================
 UPLOAD_DIR = os.path.join(st.session_state.temp_dir, "uploads")
