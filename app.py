@@ -48,8 +48,22 @@ try:
     from core.models import load_yolo_model, load_whisper_model
     model_yolo = load_yolo_model()
     whisper_model = load_whisper_model()
-    st.success("✅ Modelos IA carregados com sucesso!")
-    modo_status = "com IA"
+
+    # Verificar se pelo menos um modelo foi carregado
+    if model_yolo is not None or whisper_model is not None:
+        if model_yolo is not None and whisper_model is not None:
+            st.success("✅ Modelos IA carregados com sucesso!")
+            modo_status = "com IA"
+        elif model_yolo is not None:
+            st.success("✅ Modelo YOLO carregado com sucesso!")
+            modo_status = "com IA (YOLO)"
+        elif whisper_model is not None:
+            st.info("ℹ️ Apenas Whisper disponível - modo IA limitado")
+            modo_status = "IA limitada (Whisper)"
+    else:
+        st.warning("⚠️ Nenhum modelo IA pôde ser carregado")
+        modo_status = "sem IA (modo básico)"
+
 except ImportError as e:
     if "cv2" in str(e) or "libGL" in str(e):
         st.error("❌ **Erro de Dependências do Sistema**")
