@@ -4,6 +4,15 @@ import warnings
 import logging
 from datetime import datetime
 
+# ====================== VERIFICAÇÃO DE DEPENDÊNCIAS CRÍTICAS ======================
+try:
+    import cv2
+    print("✅ OpenCV importado com sucesso")
+except ImportError as e:
+    st.error(f"❌ Erro crítico: OpenCV não pode ser importado: {e}")
+    st.error("Isso pode indicar um problema com as dependências do sistema.")
+    st.stop()
+
 # ====================== IMPORTS DO SEU PROJETO ======================
 from core.processor import (
     processar_video,
